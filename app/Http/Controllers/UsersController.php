@@ -44,4 +44,11 @@ class UsersController extends Controller
         session()->flash('success', '欢迎，牛气哄哄的Laravel');
         return redirect()->route('users.show', [$user]);
     }
+
+    /**
+     *  用户编辑
+     */
+    public function edit(User $user){
+        return view('users.edit', compact('user'));
+    }
 }
