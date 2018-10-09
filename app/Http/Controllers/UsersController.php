@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Models\User;
+use Auth;
 
 class UsersController extends Controller
 {
@@ -41,6 +42,7 @@ class UsersController extends Controller
         ]);
 
         //注册成功提示
+        Auth::login($user);
         session()->flash('success', '欢迎，牛气哄哄的Laravel');
         return redirect()->route('users.show', [$user]);
     }
