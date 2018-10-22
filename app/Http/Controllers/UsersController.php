@@ -9,6 +9,26 @@ use Auth;
 
 class UsersController extends Controller
 {
+
+    public function __construct(){
+        //验证是否登录
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store', 'index'],
+        ]);
+
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+        
+        
+    }
+
+    public function index(){
+        // $users = User::all();
+        $users = User::paginate(5);
+        return view('users.index', compact('users'));
+    }
+
     /**
      * 用户注册
      */
@@ -51,6 +71,8 @@ class UsersController extends Controller
      *  用户编辑
      */
     public function edit(User $user){
+        //授权策略，只能更改自己的数据
+        $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
@@ -63,6 +85,9 @@ class UsersController extends Controller
             'password' => 'nullable|confirmed|min:6'
         ]);
 
+        //授权策略，只能更改自己的数据
+        $this->authorize('update', $user);
+
         $data = [];
         $data['name'] = $request->name;
         if ($request->password) {
@@ -73,5 +98,13 @@ class UsersController extends Controller
         session()->flash('success', '个人资料编辑成功');
 
         return redirect()->route('users.show', $user->id);
+    }
+
+    public function destroy(User $user)
+    {
+        $this->authorize('destroy', $user);
+        $user->delete();
+        session()->flash('success', '成功删除用户！');
+        return back();
     }
 }
